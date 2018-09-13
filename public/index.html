@@ -25,6 +25,8 @@
         .mask {
             background-color: black;
             opacity: 0.6;
+            width: 100%;
+            height: 100%;
         }
 
         #info {
@@ -120,9 +122,7 @@
             for (var k = 0; k < 3; k++) {
                 var ele = document.createElement('div');
                 ele.className = 'dot'
-
                 ele.style.background = new THREE.Color(Math.random() * 0xffffff).getStyle();
-
                 var obj = new THREE.CSS3DObject(ele);
                 // obj.position.x = Math.random() * 200 - 100;
                 // obj.position.y = Math.random() * 200 - 100;
@@ -130,19 +130,25 @@
 
 
                 ele.parent = obj;
-
-
-                obj.element.onclick = function () {
-                    scene.children[0].element.style.visiblity = 'visible'
-                    console.log(scene.children[0].element.style.visiblity )
-                    console.log(1288899999999)
-                };
-
                 obj.position.fromArray(side.position);
                 obj.position.x = 100
                 obj.position.y = 100
 
+
                 obj.rotation.fromArray(side.rotation);
+
+                obj.element.ontouchstart = function () {
+
+                    document.getElementById('mask').style.visibility = 'visible'
+                    let mask = scene.getObjectByName("mask");
+                    console.log(mask)
+
+                    mask.position.z = object.position.z>0?1:-1
+
+                    console.log(1288899999999)
+                };
+
+
 
 
                 scene.add(obj);
@@ -167,40 +173,26 @@
     function initMask() {
         var ele = document.createElement('div');
         ele.className = 'mask'
-        ele.style.width = '50px';
-        ele.style.height = '50px';
-        ele.style.visibility='hidden'
+        ele.id = 'mask'
+        ele.style.visibility = 'hidden'
 
         var obj = new THREE.CSS3DObject(ele);
         obj.name = 'mask'
-
         obj.position.x = 0
         obj.position.y = 0
-        obj.position.z = 200
+        obj.position.z = 1
 
+        ele.parent = obj;
+
+        obj.element.ontouchstart = function () {
+            let mask = document.getElementById('mask')
+            mask.style.visibility === 'visible' ? mask.style.visibility = 'hidden' : mask.style.visibility = 'visible'
+        };
 
         scene.add(obj)
     }
 
     function addlistener() {
-
-        scene.children[0].addEventListener("click", onclick, {passive: false});
-        var selectedObject;
-        var raycaster = new THREE.Raycaster();
-
-        function onclick(event) {
-            var mouse = new THREE.Vector2();
-            mouse.x = (event.touches[0].pageX / renderer.domElement.clientWidth) * 2 - 1;
-            mouse.y = -(event.touches[0].pageY / renderer.domElement.clientHeight) * 2 + 1;
-            mouse.z = 0.5
-
-            raycaster.setFromCamera(mouse, camera);
-            var intersects = raycaster.intersectObjects(scene, true); //array
-            if (intersects.length > 0) {
-
-                selectedObject = intersects[0];
-            }
-        }
 
 
         document.addEventListener('mousedown', onDocumentMouseDown, false);
